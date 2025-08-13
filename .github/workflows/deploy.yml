@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Deploy Vite site to GitHub Pages
 
 on:
@@ -26,10 +27,16 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      - name: Enable corepack (for pnpm)
+        run: corepack enable
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
+
+      - name: Verify pnpm
+        run: pnpm --version
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
@@ -37,7 +44,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Prepare Pages artifact
+      - name: Prepare Pages artifact (SPA + no Jekyll)
         run: |
           touch dist/.nojekyll
           cp dist/index.html dist/404.html
