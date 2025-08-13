@@ -19,17 +19,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: ls -la && echo "--- dist ---" && ls -la dist
-      - name: Add .nojekyll and 404.html
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Prepare Pages artifact
         run: |
           touch dist/.nojekyll
           cp dist/index.html dist/404.html
+          ls -la dist
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
