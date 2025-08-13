@@ -24,28 +24,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
 
-      # This enables corepack (ships with Node 20+) so pnpm can be installed
-      - name: Enable corepack
-        run: corepack enable
+      - name: Enable & activate pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+          pnpm --version
 
-      # Explicitly install pnpm
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Verify pnpm
-        run: pnpm --version
-
-      - name: Install dependencies
+      - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: Build site
+      - name: Build
         run: pnpm build
 
-      - name: Prepare Pages artifact
+      - name: Prepare Pages artifact (SPA + no Jekyll)
         run: |
           touch dist/.nojekyll
           cp dist/index.html dist/404.html
